@@ -1,0 +1,45 @@
+# Профили подключений к СУБД. Секреты подставляются из переменных окружения
+# (см. .env.example). Здесь — только несекретные параметры и пути к SQL.
+#
+# Формат интерполяции: ${VAR_NAME} — значение берётся из env.
+
+databases:
+  oracle:
+    driver: oracle
+    host: ${DATASAN_ORACLE_HOST}
+    port: ${DATASAN_ORACLE_PORT}
+    service_name: ${DATASAN_ORACLE_SERVICE}
+    user: ${DATASAN_ORACLE_USER}
+    password: ${DATASAN_ORACLE_PASSWORD}
+    schema: ${DATASAN_ORACLE_SCHEMA}
+    sql_dir: sql/oracle
+    # Разделитель батчей в скриптах. Для Oracle PL/SQL используем "/" на новой строке.
+    statement_separator: "sqlplus"
+
+  postgres:
+    driver: postgres
+    host: ${DATASAN_POSTGRES_HOST}
+    port: ${DATASAN_POSTGRES_PORT}
+    database: ${DATASAN_POSTGRES_DATABASE}
+    user: ${DATASAN_POSTGRES_USER}
+    password: ${DATASAN_POSTGRES_PASSWORD}
+    schema: ${DATASAN_POSTGRES_SCHEMA}
+    sql_dir: sql/postgres
+    statement_separator: ";"
+
+  mssql:
+    driver: mssql
+    host: ${DATASAN_MSSQL_HOST}
+    port: ${DATASAN_MSSQL_PORT}
+    database: ${DATASAN_MSSQL_DATABASE}
+    user: ${DATASAN_MSSQL_USER}
+    password: ${DATASAN_MSSQL_PASSWORD}
+    schema: ${DATASAN_MSSQL_SCHEMA}
+    sql_dir: sql/mssql
+    statement_separator: "GO"
+
+# Параметры тестового прогона
+run:
+  connect_timeout_sec: 10
+  query_timeout_sec: 300
+  cleanup_on_teardown: true   # выполнять drop-скрипты после тестов установки

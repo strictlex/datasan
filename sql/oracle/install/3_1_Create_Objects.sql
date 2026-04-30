@@ -1,0 +1,273 @@
+create table PFLB_CURRENT_STATUS
+(
+    sesid number,
+    status varchar2(255),
+    updtime timestamp
+)/ --HARDCODE FOR DEPLOYMENT
+
+create table PFLB_NOT_PROCESSED_JOBS
+(
+    table_owner varchar2(255),
+    table_name varchar2(255),
+    column_name varchar2(255),
+    upd_query varchar2(4000)
+)/ --HARDCODE FOR DEPLOYMENT
+
+Create table PFLB_TABLE_SIZE
+(
+    id integer primary key,
+    owner_name varchar2(255),
+    table_name varchar2(255),
+    avg_dep_sum_col_len number,
+    total_avg_col_len number,
+    percent_dep varchar2(255),
+    total_table_size_gig number
+)/ --HARDCODE FOR DEPLOYMENT
+
+CREATE TABLE "PFLB_VIEWCONTENT"
+(	"OWNER_NAME" VARCHAR2(255 BYTE),
+     "TABLE_NAME" VARCHAR2(255 BYTE),
+     "COLUMN_NAME" VARCHAR2(255 BYTE),
+     "COLUMN_TYPE" VARCHAR2(255 BYTE),
+     "ENCODE_METHOD" VARCHAR2(255 BYTE),
+     "COLUMN_ENCODE_TYPE" VARCHAR2(255 BYTE),
+     "EXAMPLE" VARCHAR2(255 BYTE),
+     "WHERE_CLAUSE" VARCHAR2(255 BYTE),
+     "UPDATE_ROWS" INTEGER,
+     "COLUMN_MAX_LEN" INTEGER
+)/ --HARDCODE FOR DEPLOYMENT
+
+CREATE TABLE "PFLB_ALL_TAB_INDEXES"
+(	"ID" NUMBER(*,0),
+     "INDEX_NAME" VARCHAR2(255 BYTE),
+     "OWNER_NAME" VARCHAR2(255 BYTE),
+     "TABLE_NAME" VARCHAR2(255 BYTE),
+     "COLUMN_NAME" VARCHAR2(255 BYTE),
+     "SIZE_GB" NUMBER,
+     "STATUS" VARCHAR2(63 BYTE),
+     PRIMARY KEY ("ID")
+         USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS
+         STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+         PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+         BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)
+         TABLESPACE "SYSAUX"  ENABLE
+)/ --HARDCODE FOR DEPLOYMENT
+
+CREATE TABLE "PFLB_LT_DEPERSONTABLES"
+(	"TABLE_NAME" VARCHAR2(255 BYTE),
+     "TABLE_TYPE" VARCHAR2(255 BYTE)
+)/ --HARDCODE FOR DEPLOYMENT
+
+CREATE TABLE "PFLB_ACTIVE_JOBS"
+(	"JOB_ID" NUMBER(*,0) GENERATED ALWAYS AS IDENTITY MINVALUE 1 MAXVALUE 1000000 INCREMENT BY 1 START WITH 1 CACHE 10 NOORDER  CYCLE  NOKEEP  NOSCALE  NOT NULL ENABLE,
+     "UPSTRING" VARCHAR2(4000 BYTE),
+     "SID" NUMBER(*,0),
+     "PRIORITY" NUMBER
+)/ --HARDCODE FOR DEPLOYMENT
+
+CREATE TABLE "PFLB_ACTIVE_STATUS"
+(	"CHANNEL" INTEGER,
+     "STATUS" VARCHAR2(4000 BYTE)
+)/ --HARDCODE FOR DEPLOYMENT
+
+
+CREATE TABLE "PFLB_JOB_PROCESSED_QUERIES"
+(	"QUERY" VARCHAR2(4000 BYTE),
+     "QERROR" VARCHAR2(511 BYTE)
+)/ --HARDCODE FOR DEPLOYMENT
+
+
+CREATE TABLE PFLB_LOGS
+(  ID NUMBER(*,0),
+   LSTR VARCHAR2(4000 BYTE),
+   LDATE TIMESTAMP (6),
+   SID NUMBER(*,0)
+)/ --HARDCODE FOR DEPLOYMENT
+
+CREATE TABLE "PFLB_PROCESSED_QUERIES"
+(	"QUERY" varchar2(4000),
+     "MD5" varchar2(32),
+     "MAX_ID" number(19,0)
+)/ --HARDCODE FOR DEPLOYMENT
+
+create table pflb_table_triggers
+(towner varchar2(255), trigger_name varchar2(255), table_name varchar2(255), tableowner varchar2(255))/ --HARDCODE FOR DEPLOYMENT
+
+CREATE TABLE pflb_result_types (
+                                   id NUMBER GENERATED ALWAYS as IDENTITY(START with 1 INCREMENT by 1),
+                                   owner VARCHAR2(4000),
+                                   table_name VARCHAR2(4000),
+                                   column_name VARCHAR2(4000),
+                                   last_rule VARCHAR2(4000),
+                                   result VARCHAR2(4000)
+)/ --HARDCODE FOR DEPLOYMENT
+
+CREATE TABLE pflb_regexp_search_rules (
+                                          id NUMBER PRIMARY KEY,
+                                          rule VARCHAR2(4000),
+                                          description VARCHAR2(4000)
+)/ --HARDCODE FOR DEPLOYMENT
+
+CREATE TABLE pflb_dict_search_rules (
+                                        id NUMBER PRIMARY KEY,
+                                        rule VARCHAR2(4000),
+                                        description VARCHAR2(4000)
+)/ --HARDCODE FOR DEPLOYMENT
+
+create table pflb_multiargs_functions(
+                                         id 	INTEGER,
+                                         ENCODE_METHOD VARCHAR2(30),
+                                         COLUMN_ENCODE_TYPE VARCHAR2(30)
+)/ --HARDCODE FOR DEPLOYMENT
+
+create table pflb_fun_args_value(
+                                    fun_id integer,
+                                    position integer,
+                                    value varchar2(1000)
+)/ --HARDCODE FOR DEPLOYMENT
+
+CREATE TABLE "PFLB_PROCESSED_TABLES"
+(	"ID" NUMBER,
+     "OWNER_NAME" VARCHAR2(50 BYTE),
+     "TABLE_NAME" VARCHAR2(50 BYTE),
+     "STATUS" VARCHAR2(4000 BYTE),
+     "DEP_TIME" VARCHAR2(255 BYTE)
+) SEGMENT CREATION IMMEDIATE 
+  PCTFREE 10 PCTUSED 40 INITRANS 1 MAXTRANS 255 
+ NOCOMPRESS LOGGING
+  STORAGE(INITIAL 65536 NEXT 1048576 MINEXTENTS 1 MAXEXTENTS 2147483645
+  PCTINCREASE 0 FREELISTS 1 FREELIST GROUPS 1
+  BUFFER_POOL DEFAULT FLASH_CACHE DEFAULT CELL_FLASH_CACHE DEFAULT)/ --HARDCODE FOR DEPLOYMENT
+
+
+
+CREATE TABLE PFLB_UPD_JOBS_METRICS
+(	"ID" integer primary key,
+     "JOB_QUERY" VARCHAR2(4000 BYTE),
+     "JOB_START" timestamp,
+     "JOB_END" timestamp,
+     "JOB_ELAPS_TIME" interval day to second,
+     "CHANNEL" integer
+)/ --HARDCODE FOR DEPLOYMENT
+
+
+create sequence PFLB_UPD_METR_SEQ
+    Start with 1
+    increment by 1
+    cache 20/ --HARDCODE FOR DEPLOYMENT
+
+create sequence PFLB_tmp_SEQ
+    Start with 1
+    increment by 1
+    cache 20/ --HARDCODE FOR DEPLOYMENT
+
+
+CREATE TABLE PFLB_EVEN_TABLES
+(	"ID" NUMBER generated always as identity(start with 1 increment by 1),
+     "JOB_QUERY" VARCHAR2(4000 BYTE),
+     "CONC_JOB_1" VARCHAR2(4000 BYTE),
+     "CONC_JOB_2" VARCHAR2(4000 BYTE)
+)/ --HARDCODE FOR DEPLOYMENT
+
+
+CREATE TABLE PFLB_TEMP_TABLE_INDEXES
+(  OWNER_NAME VARCHAR2(255 BYTE),
+   TABLE_NAME VARCHAR2(255 BYTE),
+   INDEX_NAME VARCHAR2(255 BYTE),
+   TABLE_STATUS VARCHAR2(30 BYTE),
+   INDEX_STATUS VARCHAR2(30 BYTE),
+   THREADS NUMBER(*,0),
+   INDEX_OWNER VARCHAR2(256 BYTE)
+) / --HARDCODE FOR DEPLOYMENT
+
+
+create table pflb_not_processed_indexes
+(
+    index_owner varchar2(255),
+    index_table_name varchar2(255),
+    index_name varchar2(255)
+) / --HARDCODE FOR DEPLOYMENT
+
+create table pflb_up_err_tab
+(
+    ERR_CODE integer unique,
+    ERR_TIER integer,
+    DESCRIPTION varchar2(4000)
+)/ --HARDCODE FOR DEPLOYMENT
+
+insert into pflb_up_err_tab values ('0', '4', 'SKIPPING TABLE')
+/ --HARDCODE FOR DEPLOYMENT
+
+create table pflb_upd_errors
+(
+    owner varchar2(255),
+    table_name varchar2(255),
+    updstr varchar2(4000),
+    ERR_CODE integer
+)/ --HARDCODE FOR DEPLOYMENT
+
+CREATE TABLE "PFLB_PROCESSED_QUERIES_C"
+(	"QUERY" varchar2(4000),
+     "MD5" varchar2(32),
+     "MAX_ID" varchar2(255)
+)/ --HARDCODE FOR DEPLOYMENT
+
+CREATE TABLE "PFLB_DICT_TYPES"
+(	"ENCODE_METHOD" varchar2(255),
+     "COLUMN_ENCODE_TYPE" varchar2(255),
+     "ID_DICT" NUMBER(*,0),
+     "DICT_SHUFFLE_METHOD" varchar2(100)
+)/ --HARDCODE FOR DEPLOYMENT
+
+CREATE TABLE "PFLB_DICT"
+(	"ID" INTEGER,
+     "VALUE" CLOB
+)/ --HARDCODE FOR DEPLOYMENT
+
+create table pflb_livestatus
+(
+    last_date timestamp,
+    status varchar2(255)
+)/ --HARDCODE FOR DEPLOYMENT
+
+CREATE SEQUENCE  PFLB_ACT_CHAN_SEQ  MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 1/ --HARDCODE FOR DEPLOYMENT
+
+CREATE TABLE PFLB_ACTIVE_CHANNELS
+(  CHANNEL_ID NUMBER(*,0),
+   CHANNEL_NAME VARCHAR2(1999 BYTE),
+   PRIORITY NUMBER(*,0),
+   TREADS_AMT NUMBER(*,0),
+   STATUS VARCHAR2(50 BYTE),
+   SID NUMBER(*,0)
+)/ --HARDCODE FOR DEPLOYMENT
+
+
+CREATE TABLE PFLB_DICT_LEGACY
+(  FUNCTION_NAME VARCHAR2(255 BYTE)
+) / --HARDCODE FOR DEPLOYMENT
+
+CREATE SEQUENCE  PFLB_PROC_TAB_ID  MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 1/ --HARDCODE FOR DEPLOYMENT
+
+CREATE TABLE "PFLB_DICT_ARGS"
+(	"ENCODE_METHOD" VARCHAR2(26 BYTE),
+     "COLUMN_ENCODE_TYPE" VARCHAR2(26 BYTE),
+     "FUNCTION_NAME" VARCHAR2(128 BYTE),
+     "ARG_POS" NUMBER(38,0),
+     "ARG_VALUE" VARCHAR2(26 BYTE)
+)
+/ --HARDCODE FOR DEPLOYMENT
+CREATE OR REPLACE EDITIONABLE TRIGGER PFLB_ACT_CHAN_TGID 
+BEFORE INSERT ON PFLB_ACTIVE_CHANNELS
+FOR EACH ROW
+   WHEN (new.CHANNEL_ID IS NULL) BEGIN
+  :new.CHANNEL_ID := PFLB_ACT_CHAN_SEQ.NEXTVAL;
+END;/ --HARDCODE FOR DEPLOYMENT
+
+ALTER TRIGGER PFLB_ACT_CHAN_TGID ENABLE/ --HARDCODE FOR DEPLOYMENT
+
+
+create table pflb_dict_sf_args (encode_method varchar2(255), column_encode_type varchar2(255), function_name varchar2(255), arg_pos integer, arg_value varchar2(255))
+/ --HARDCODE FOR DEPLOYMENT
+insert into pflb_livestatus values (sysdate, 'FINISHED')
+/ --HARDCODE FOR DEPLOYMENT
+
