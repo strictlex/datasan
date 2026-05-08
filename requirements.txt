@@ -1,0 +1,11 @@
+pytest>=8.0
+pytest-html>=4.1
+pydantic>=2.6
+pydantic-settings>=2.2
+pyyaml>=6.0
+python-dotenv>=1.0
+
+# drivers
+oracledb>=2.2          # Oracle (thin mode, без Instant Client)
+psycopg[binary]>=3.1   # PostgreSQL
+pymssql>=2.3           # MS SQL Server
