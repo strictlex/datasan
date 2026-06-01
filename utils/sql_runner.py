@@ -140,7 +140,6 @@ class SQLRunner:
         """Выполняет .sql-файл. Возвращает количество успешно применённых statement'ов."""
         log.info("Выполняю SQL-скрипт: %s", path)
         text = path.read_text(encoding="utf-8")
-        text = text.replace(':', '::')
         statements = split_statements(text, self.separator)
         log.debug("Statement'ов в скрипте: %d", len(statements))
         for idx, stmt in enumerate(statements, 1):
