@@ -22,7 +22,7 @@ def test_sm_07_depersonalization(db_client, test_logger):
         )
     """)
     db_client.execute("INSERT INTO test_sm07 VALUES (1, '772456789012', '79161234567')")
-    db_client.commit()
+    # db_client.commit()
     
     # 2. Регистрируем колонки в профиле
     db_client.execute("DELETE FROM PFLB_VIEWCONTENT WHERE table_name = 'TEST_SM07'")
@@ -34,7 +34,7 @@ def test_sm_07_depersonalization(db_client, test_logger):
         INSERT INTO PFLB_VIEWCONTENT (owner_name, table_name, column_name, encode_method, column_encode_type)
         VALUES ('SMOKE_TEST', 'TEST_SM07', 'PHONE', 'HASH', 'PHONENUMBER')
     """)
-    db_client.commit()
+    # db_client.commit()
     
     test_logger.info("SM-07: запуск деперсонализации")
     
@@ -54,7 +54,7 @@ def test_sm_07_depersonalization(db_client, test_logger):
                 );
             END;
         """)
-        db_client.commit()
+        # db_client.commit()
     except Exception as e:
         test_logger.error(f"Деперсонализация упала: {e}")
         pytest.fail(f"Ошибка при вызове PFLB_PROCESS_DATA_TYPE: {e}")
@@ -72,5 +72,5 @@ def test_sm_07_depersonalization(db_client, test_logger):
     
     # 6. Очистка
     db_client.execute("DROP TABLE test_sm07 PURGE")
-    db_client.commit()
+    # db_client.commit()
     test_logger.info("SM-07: пройден")

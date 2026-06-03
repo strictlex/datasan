@@ -22,7 +22,7 @@ def test_sm_14_processed_tables(db_client, test_logger):
             )
         """)
         db_client.execute(f"INSERT INTO {tname} VALUES (1, 'original')")
-        db_client.commit()
+        # db_client.commit()
         
         # Регистрируем в профиле
         db_client.execute(f"DELETE FROM PFLB_VIEWCONTENT WHERE table_name = '{tname}'")
@@ -30,7 +30,7 @@ def test_sm_14_processed_tables(db_client, test_logger):
             INSERT INTO PFLB_VIEWCONTENT (owner_name, table_name, column_name, encode_method, column_encode_type)
             VALUES ('SMOKE_TEST', '{tname}', 'NAME', 'CHAR', 'CHAR')
         """)
-    db_client.commit()
+    # db_client.commit()
     
     # Запускаем деперсонализацию (можно вызвать один раз для обеих таблиц)
     test_logger.info("SM-14: запуск деперсонализации")
@@ -49,7 +49,7 @@ def test_sm_14_processed_tables(db_client, test_logger):
                 );
             END;
         """)
-        db_client.commit()
+        # db_client.commit()
     except Exception as e:
         test_logger.error(f"Деперсонализация не удалась: {e}")
         pytest.fail(f"Ошибка: {e}")
@@ -68,5 +68,5 @@ def test_sm_14_processed_tables(db_client, test_logger):
     # Очистка
     for tname in ['TEST_SM14_A', 'TEST_SM14_B']:
         db_client.execute(f"DROP TABLE {tname} PURGE")
-    db_client.commit()
+    # db_client.commit()
     test_logger.info("SM-14: пройден")

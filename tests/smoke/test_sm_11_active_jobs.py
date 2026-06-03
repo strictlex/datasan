@@ -24,7 +24,7 @@ def test_sm_11_active_jobs(db_client, test_logger):
     # Вставляем 2000 строк, чтобы процесс шёл не мгновенно
     for i in range(1, 2001):
         db_client.execute(f"INSERT INTO test_sm11 VALUES ({i}, 'data_{i}')")
-    db_client.commit()
+    # db_client.commit()
     
     # Регистрируем в профиле
     db_client.execute("DELETE FROM PFLB_VIEWCONTENT WHERE table_name = 'TEST_SM11'")
@@ -32,7 +32,7 @@ def test_sm_11_active_jobs(db_client, test_logger):
         INSERT INTO PFLB_VIEWCONTENT (owner_name, table_name, column_name, encode_method, column_encode_type)
         VALUES ('SMOKE_TEST', 'TEST_SM11', 'PAYLOAD', 'CHAR', 'CHAR')
     """)
-    db_client.commit()
+    # db_client.commit()
     
     # Функция, которая запускает деперсонализацию
     def run_masking():
@@ -51,7 +51,7 @@ def test_sm_11_active_jobs(db_client, test_logger):
                     );
                 END;
             """)
-            db_client.commit()
+            # db_client.commit()
         except Exception as e:
             test_logger.error(f"Ошибка в потоке: {e}")
     
@@ -77,5 +77,5 @@ def test_sm_11_active_jobs(db_client, test_logger):
     
     # Очистка
     db_client.execute("DROP TABLE test_sm11 PURGE")
-    db_client.commit()
+    # db_client.commit()
     test_logger.info("SM-11: пройден")
