@@ -8,7 +8,12 @@ def test_sm_07_depersonalization(db_client, test_logger):
     test_logger.info("SM-07: подготовка тестовой таблицы")
     
     # 1. Создаём таблицу с тестовыми данными
-    db_client.execute("BEGIN DROP TABLE test_sm07 PURGE END;")
+    # db_client.execute("BEGIN DROP TABLE test_sm07 PURGE END;")
+    try:
+        db_client.execute("DROP TABLE test_sm07 PURGE")
+    except Exception as e:
+        # Таблицы нет — игнорируем
+        test_logger.info("Таблица test_sm07 не существовала, пропускаем DROP")
     db_client.execute("""
         CREATE TABLE test_sm07 (
             id NUMBER PRIMARY KEY,

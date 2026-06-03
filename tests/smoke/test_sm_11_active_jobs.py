@@ -9,7 +9,12 @@ def test_sm_11_active_jobs(db_client, test_logger):
     """
     test_logger.info("SM-11: подготовка таблицы с большим количеством строк")
     
-    db_client.execute("BEGIN DROP TABLE test_sm11 PURGE END;")
+    # db_client.execute("BEGIN DROP TABLE test_sm11 PURGE END;")
+    try:
+        db_client.execute("DROP TABLE test_sm11 PURGE")
+    except Exception as e:
+        # Таблицы нет — игнорируем
+        test_logger.info("Таблица test_sm11 не существовала, пропускаем DROP")
     db_client.execute("""
         CREATE TABLE test_sm11 (
             id NUMBER PRIMARY KEY,
