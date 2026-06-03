@@ -1,3 +1,4 @@
+set define off;
 Create or replace and compile java source named OraSQL as
 
 import java.math.BigInteger;
