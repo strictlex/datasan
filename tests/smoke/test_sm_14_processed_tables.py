@@ -9,7 +9,7 @@ def test_sm_14_processed_tables(db_client, test_logger):
     
     # Создаём две таблицы
     for tname in ['TEST_SM14_A', 'TEST_SM14_B']:
-        db_client.execute(f"DROP TABLE {tname} PURGE")
+        db_client.execute(f"BEGIN DROP TABLE {tname} PURGE END;")
         db_client.execute(f"""
             CREATE TABLE {tname} (
                 id NUMBER PRIMARY KEY,
