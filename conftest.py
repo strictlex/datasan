@@ -17,7 +17,7 @@ import os
 from datetime import datetime
 from pathlib import Path
 
-import pytest
+import pytest # type: ignore
 
 from utils.cleanup import Cleanup
 from utils.config import ROOT_DIR, load_config, AppConfig, DBProfile
@@ -98,7 +98,7 @@ def db_profile(app_config: AppConfig, db_key: str) -> DBProfile:
 
 
 @pytest.fixture
-def db_client(app_config: AppConfig, db_profile: DBProfile) -> DBClient:
+def db_client(app_config: AppConfig, db_profile: DBProfile) -> DBClient: # type: ignore
     """
     Новый клиент на каждый тест — проще рассуждать об изоляции и транзакциях.
     Если тестов станет много и коннект будет узким местом, перейдём на session-scope.
@@ -106,7 +106,7 @@ def db_client(app_config: AppConfig, db_profile: DBProfile) -> DBClient:
     client = make_client(db_profile, connect_timeout=app_config.run.connect_timeout_sec)
     client.connect()
     try:
-        yield client
+        yield client # type: ignore
     finally:
         client.close()
 
