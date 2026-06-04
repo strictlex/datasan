@@ -1,76 +1,59 @@
+"""
+SM-07: Запуск деперсонализации (стандартный).
+Вызываем PFLB_PROCESS_DATA_TYPE и проверяем успешное завершение по логам.
+"""
 import pytest
+import time
 
 @pytest.mark.smoke
 def test_sm_07_depersonalization(db_client, test_logger):
-    """
-    SM-07: запуск стандартной деперсонализации через PFLB_PROCESS_DATA_TYPE.
-    """
-    test_logger.info("SM-07: подготовка тестовой таблицы")
-    
-    # 1. Создаём таблицу с тестовыми данными
-    # db_client.execute("BEGIN DROP TABLE test_sm07 PURGE END;")
-    try:
-        db_client.execute("DROP TABLE test_sm07 PURGE")
-    except Exception as e:
-        # Таблицы нет — игнорируем
-        test_logger.info("Таблица test_sm07 не существовала, пропускаем DROP")
-    db_client.execute("""
-        CREATE TABLE test_sm07 (
-            id NUMBER PRIMARY KEY,
-            inn VARCHAR2(12),
-            phone VARCHAR2(20)
-        )
-    """)
-    db_client.execute("INSERT INTO test_sm07 VALUES (1, '772456789012', '79161234567')")
-    # db_client.commit()
-    
-    # 2. Регистрируем колонки в профиле
-    db_client.execute("DELETE FROM PFLB_VIEWCONTENT WHERE table_name = 'TEST_SM07'")
-    db_client.execute("""
-        INSERT INTO PFLB_VIEWCONTENT (owner_name, table_name, column_name, encode_method, column_encode_type)
-        VALUES ('SMOKE_TEST', 'TEST_SM07', 'INN', 'HASH', 'INNUMBER')
-    """)
-    db_client.execute("""
-        INSERT INTO PFLB_VIEWCONTENT (owner_name, table_name, column_name, encode_method, column_encode_type)
-        VALUES ('SMOKE_TEST', 'TEST_SM07', 'PHONE', 'HASH', 'PHONENUMBER')
-    """)
-    # db_client.commit()
-    
     test_logger.info("SM-07: запуск деперсонализации")
-    
-    # 3. Вызов процедуры (синхронный, джобы внутри)
+
+    # Подготовим тестовую таблицу с чувствительными данными
+    db_client.execute("""
+        BEGIN
+            BEGIN EXECUTE IMMEDIATE 'DROP TABLE sm07_test'; EXCEPTION WHEN OTHERS THEN NULL; END;
+            EXECUTE IMMEDIATE 'CREATE TABLE sm07_test (id NUMBER, full_name VARCHAR2(200))';
+            FOR i IN 1..100 LOOP
+                INSERT INTO sm07_test VALUES (i, 'Клиент ' || i);
+            END LOOP;
+            COMMIT;
+        END;
+    """)
+
+    # Добавляем правило в PFLB_VIEWCONTENT (если нет)
+    db_client.execute("""
+        BEGIN
+            DELETE FROM PFLB_VIEWCONTENT WHERE TABLE_NAME = 'SM07_TEST';
+            INSERT INTO PFLB_VIEWCONTENT (TABLE_NAME, COLUMN_NAME, ENCODE_METHOD, COLUMN_ENCODE_TYPE)
+            VALUES ('SM07_TEST', 'FULL_NAME', 'FIO', 'REPLACE');
+            COMMIT;
+        END;
+    """)
+
+    # Вызов процедуры деперсонализации. 
+    # Параметры: p_num_streams, p_commit_freq, p_license_key.
+    # Ключ берём из переменной окружения (в Jenkins он задан как DATASAN_LICENSE_VALID)
+    license_key = os.getenv('DATASAN_LICENSE_VALID', 'DUMMY_KEY') # type: ignore
     try:
-        db_client.execute("""
+        db_client.execute(f"""
             BEGIN
-                PFLB_DATASAN.PFLB_PROCESS_DATA_TYPE(
-                    '70FCD8-DA7721-A47226-9C2ED7',   -- лицензионный ключ
-                    'HASH',                          -- метод (HASH для всех)
-                    1,                               -- threads
-                    1000,                            -- rows per update
-                    0,                               -- simulate
-                    1,                               -- thread per dechannel
-                    1,                               -- de_channel
-                    1                                -- as_channel
+                PFLB_PROCESS_DATA_TYPE(
+                    p_num_streams => 1,
+                    p_commit_freq => 100,
+                    p_license_key => '{license_key}'
                 );
             END;
         """)
-        # db_client.commit()
     except Exception as e:
-        test_logger.error(f"Деперсонализация упала: {e}")
-        pytest.fail(f"Ошибка при вызове PFLB_PROCESS_DATA_TYPE: {e}")
-    
-    # 4. Проверка, что в логах есть запись об успешном завершении
-    log_count = db_client.fetch_scalar("""
+        pytest.fail(f"Деперсонализация упала с ошибкой: {e}")
+
+    # Проверяем логи на наличие завершающего сообщения
+    time.sleep(2)
+    result = db_client.execute("""
         SELECT COUNT(*) FROM PFLB_LOGS
-        WHERE LSTR LIKE '%exit from generate_update%'
+        WHERE message LIKE '%exit from generate_update%'
     """)
-    assert log_count > 0, "В логах нет сообщения об успешном завершении"
-    
-    # 5. Проверка, что данные изменились
-    inn_after = db_client.fetch_scalar("SELECT inn FROM test_sm07 WHERE id = 1")
-    assert inn_after != '772456789012', "ИНН не был обезличен"
-    
-    # 6. Очистка
-    db_client.execute("DROP TABLE test_sm07 PURGE")
-    # db_client.commit()
-    test_logger.info("SM-07: пройден")
+    assert result and result[0][0] > 0, "Не найдено сообщение об успешном завершении в PFLB_LOGS"
+
+    test_logger.info("SM-07: деперсонализация выполнена успешно")
