@@ -2,10 +2,10 @@
 SM-11: Активные задания.
 Во время выполнения деперсонализации таблица PFLB_ACTIVE_JOBS должна содержать записи.
 """
+import os
 import pytest
 import threading
 import time
-import os
 
 def run_depersonalization(db_client, error_holder, license_key):
     try:
@@ -21,13 +21,19 @@ def run_depersonalization(db_client, error_holder, license_key):
 def test_sm_11_active_jobs(db_client, test_logger):
     test_logger.info("SM-11: проверка активных заданий во время деперсонализации")
 
-    # Подготовка тестовой таблицы (достаточно большой, чтобы процедура работала не мгновенно)
+    # Подготовка тестовой таблицы (безопасное удаление)
     db_client.execute("""
         BEGIN
-            BEGIN EXECUTE IMMEDIATE 'DROP TABLE sm11_test'; EXCEPTION WHEN OTHERS THEN NULL; END;
+            FOR t IN (SELECT table_name FROM user_tables WHERE table_name = 'SM11_TEST') LOOP
+                EXECUTE IMMEDIATE 'DROP TABLE ' || t.table_name;
+            END LOOP;
+        END;
+    """)
+    db_client.execute("""
+        BEGIN
             EXECUTE IMMEDIATE 'CREATE TABLE sm11_test (id NUMBER, data VARCHAR2(200))';
             FOR i IN 1..5000 LOOP
-                INSERT INTO sm11_test VALUES (i, 'Sensitive data ' || i);
+                INSERT INTO sm11_test VALUES (i, ''Sensitive data '' || i);
             END LOOP;
             COMMIT;
             DELETE FROM PFLB_VIEWCONTENT WHERE TABLE_NAME = 'SM11_TEST';

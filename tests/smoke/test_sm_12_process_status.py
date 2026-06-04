@@ -2,20 +2,23 @@
 SM-12: Статус процесса после завершения.
 Таблица PFLB_ACTIVE_STATUS должна быть пуста (нет ошибок/незавершённых процессов).
 """
-import pytest
 import os
+import pytest
 
 @pytest.mark.smoke
 def test_sm_12_process_status(db_client, test_logger):
     test_logger.info("SM-12: проверка статуса после деперсонализации")
 
     license_key = os.getenv('DATASAN_LICENSE_VALID', 'DUMMY_KEY')
-    # Выполняем деперсонализацию (можно синхронно)
-    db_client.execute(f"""
-        BEGIN
-            PFLB_PROCESS_DATA_TYPE(1, 100, '{license_key}');
-        END;
-    """)
+    # Выполняем деперсонализацию синхронно
+    try:
+        db_client.execute(f"""
+            BEGIN
+                PFLB_PROCESS_DATA_TYPE(1, 100, '{license_key}');
+            END;
+        """)
+    except Exception as e:
+        pytest.fail(f"Деперсонализация не выполнена: {e}")
 
     result = db_client.execute("SELECT COUNT(*) FROM PFLB_ACTIVE_STATUS")
     count = result[0][0] if result else 0

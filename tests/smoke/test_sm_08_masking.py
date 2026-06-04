@@ -99,9 +99,13 @@ MASK_CASES = [
     ids=[c[0] for c in MASK_CASES],
 )
 def test_sm_08_masking(
-    db_client, test_logger,
-    case_id, func, original, fmt_validator,
-):
+    db_client, 
+    test_logger,
+    case_id, 
+    func, 
+    original, 
+    fmt_validator,
+    ):
     """
     SM-08: маскирование {case_id}.
     Отчёт в JUnit XML: исходное | маскированное | валидация.

@@ -2,6 +2,7 @@
 SM-07: Запуск деперсонализации (стандартный).
 Вызываем PFLB_PROCESS_DATA_TYPE и проверяем успешное завершение по логам.
 """
+import os
 import pytest
 import time
 
@@ -9,13 +10,19 @@ import time
 def test_sm_07_depersonalization(db_client, test_logger):
     test_logger.info("SM-07: запуск деперсонализации")
 
-    # Подготовим тестовую таблицу с чувствительными данными
+    # Безопасное создание тестовой таблицы (без ORA-00942)
     db_client.execute("""
         BEGIN
-            BEGIN EXECUTE IMMEDIATE 'DROP TABLE sm07_test'; EXCEPTION WHEN OTHERS THEN NULL; END;
+            FOR t IN (SELECT table_name FROM user_tables WHERE table_name = 'SM07_TEST') LOOP
+                EXECUTE IMMEDIATE 'DROP TABLE ' || t.table_name;
+            END LOOP;
+        END;
+    """)
+    db_client.execute("""
+        BEGIN
             EXECUTE IMMEDIATE 'CREATE TABLE sm07_test (id NUMBER, full_name VARCHAR2(200))';
             FOR i IN 1..100 LOOP
-                INSERT INTO sm07_test VALUES (i, 'Клиент ' || i);
+                INSERT INTO sm07_test VALUES (i, ''Клиент '' || i);
             END LOOP;
             COMMIT;
         END;
@@ -31,10 +38,7 @@ def test_sm_07_depersonalization(db_client, test_logger):
         END;
     """)
 
-    # Вызов процедуры деперсонализации. 
-    # Параметры: p_num_streams, p_commit_freq, p_license_key.
-    # Ключ берём из переменной окружения (в Jenkins он задан как DATASAN_LICENSE_VALID)
-    license_key = os.getenv('DATASAN_LICENSE_VALID', 'DUMMY_KEY') # type: ignore
+    license_key = os.getenv('DATASAN_LICENSE_VALID', 'DUMMY_KEY')
     try:
         db_client.execute(f"""
             BEGIN
