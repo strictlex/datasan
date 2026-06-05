@@ -33,7 +33,7 @@ def test_sm_11_active_jobs(db_client, test_logger):
         BEGIN
             EXECUTE IMMEDIATE 'CREATE TABLE sm11_test (id NUMBER, data VARCHAR2(200))';
             FOR i IN 1..5000 LOOP
-                INSERT INTO sm11_test VALUES (i, ''Sensitive data '' || i);
+                INSERT INTO sm11_test VALUES (i, 'Sensitive data ' || i);
             END LOOP;
             COMMIT;
             DELETE FROM PFLB_VIEWCONTENT WHERE TABLE_NAME = 'SM11_TEST';

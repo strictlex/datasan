@@ -22,7 +22,7 @@ def test_sm_07_depersonalization(db_client, test_logger):
         BEGIN
             EXECUTE IMMEDIATE 'CREATE TABLE sm07_test (id NUMBER, full_name VARCHAR2(200))';
             FOR i IN 1..100 LOOP
-                INSERT INTO sm07_test VALUES (i, ''Клиент '' || i);
+                INSERT INTO sm07_test VALUES (i, 'Клиент ' || i);
             END LOOP;
             COMMIT;
         END;
