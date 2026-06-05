@@ -55,14 +55,7 @@ def test_sm_07_depersonalization(db_client, test_logger):
         db_client.execute(f"""
             BEGIN
                 PFLB_DATASAN.PFLB_PROCESS_DATA_TYPE(
-                    p_license_key => '{license_key}',
-                    p_encode_method => 'FIO',
-                    p_num_streams => 1,
-                    p_rows_per_update => 100,
-                    p_simulate => 0,
-                    p_thread_per_dechannel => 1,
-                    p_de_channel => 1,
-                    p_as_channel => 1
+                    '{license_key}', 'FIO', 1, 100, 0, 1, 1, 1
                 );
             END;
         """)
