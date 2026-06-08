@@ -41,4 +41,5 @@ function PFLB_GET_BD_VER return integer;
 function PFLB_GET_DS_VER return varchar2;
 PROCEDURE PFLB_SLEEP(secs number);
 PROCEDURE PFLB_DICT_FILL_ALL;
+FUNCTION PFLB_IDENT_QUOTING(upstr varchar2) return varchar2;
 end PFLB_DATASAN;
