@@ -69,11 +69,12 @@ def test_sm_07_depersonalization(db_client, test_logger):
                 );
             END;
         """)
+        db_client.execute("COMMIT") 
     except Exception as e:
         pytest.fail(f"Ошибка при вызове деперсонализации: {e}")
 
     # 6. Проверяем логи
-    time.sleep(2)
+    time.sleep(5)
     result = db_client.execute("SELECT COUNT(*) FROM PFLB_LOGS")
     assert result and result[0][0] > 0, "Логи не записались"
 

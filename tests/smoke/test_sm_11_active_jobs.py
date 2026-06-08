@@ -16,6 +16,7 @@ def run_depersonalization(db_client, error_holder, license_key):
                 );
             END;
         """)
+        db_client.execute("COMMIT") 
     except Exception as e:
         error_holder.append(e)
 
