@@ -12,7 +12,7 @@ def run_depersonalization(db_client, error_holder, license_key):
         db_client.execute(f"""
             BEGIN
                 PFLB_DATASAN.PFLB_PROCESS_DATA_TYPE(
-                    '{license_key}', 'FULL_MASK', 2, 100, 0, 2, 1, 1
+                    '{license_key}', 'HASH', 2, 100, 0, 2, 1, 1
                 );
             END;
         """)
@@ -60,12 +60,13 @@ def test_sm_11_active_jobs(db_client, test_logger):
                 WHERE_CLAUSE, UPDATE_ROWS, COLUMN_MAX_LEN, EXAMPLE
             ) VALUES (
                 USER, 'SM11_TEST', 'DATA', 'VARCHAR2',
-                'FULL_MASK', 'REPLACE',
+                'HASH', 'CHAR',
                 '1=1', 1000, 200, 'test'
             );
             COMMIT;
         END;
     """)
+
 
     license_key = os.getenv('DATASAN_LICENSE_VALID', '').strip()
     if not license_key:

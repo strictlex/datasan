@@ -37,6 +37,7 @@ def test_sm_07_depersonalization(db_client, test_logger):
     """)
 
     # 4. Добавляем правило в PFLB_VIEWCONTENT
+    # Вставка в PFLB_VIEWCONTENT
     db_client.execute("""
         BEGIN
             DELETE FROM PFLB_VIEWCONTENT WHERE TABLE_NAME = 'SM07_TEST';
@@ -46,12 +47,14 @@ def test_sm_07_depersonalization(db_client, test_logger):
                 WHERE_CLAUSE, UPDATE_ROWS, COLUMN_MAX_LEN, EXAMPLE
             ) VALUES (
                 USER, 'SM07_TEST', 'FULL_NAME', 'VARCHAR2',
-                'FIO', 'REPLACE',
+                'HASH', 'CHAR',
                 '1=1', 1000, 200, 'test'
             );
             COMMIT;
         END;
-     """)
+    """)
+
+
 
     # 5. Вызываем деперсонализацию (с полной сигнатурой)
     license_key = os.getenv('DATASAN_LICENSE_VALID', '').strip()
@@ -62,7 +65,7 @@ def test_sm_07_depersonalization(db_client, test_logger):
         db_client.execute(f"""
             BEGIN
                 PFLB_DATASAN.PFLB_PROCESS_DATA_TYPE(
-                    '{license_key}', 'FIO', 2, 100, 0, 2, 1, 1
+                    '{license_key}', 'HASH', 2, 100, 0, 2, 1, 1
                 );
             END;
         """)
