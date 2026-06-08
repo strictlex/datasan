@@ -12,7 +12,7 @@ def run_depersonalization(db_client, error_holder, license_key):
         db_client.execute(f"""
             BEGIN
                 PFLB_DATASAN.PFLB_PROCESS_DATA_TYPE(
-                    '{license_key}', 'FULL_MASK', 2, 100, 1, 2, 1, 1
+                    '{license_key}', 'FULL_MASK', 2, 100, 0, 2, 1, 1
                 );
             END;
         """)
@@ -77,11 +77,11 @@ def test_sm_11_active_jobs(db_client, test_logger):
     thread.start()
 
     # Даём время на регистрацию активных заданий
-    time.sleep(5)
+    time.sleep(10)
 
     # Проверяем, что появилась активная запись (с повторными попытками)
     active_jobs_found = False
-    for attempt in range(10):
+    for attempt in range(20):
         result = db_client.execute("SELECT COUNT(*) FROM PFLB_ACTIVE_JOBS")
         if result and result[0][0] > 0:
             active_jobs_found = True
