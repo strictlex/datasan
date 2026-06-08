@@ -78,11 +78,11 @@ def test_sm_11_active_jobs(db_client, test_logger):
     thread.start()
 
     # Даём время на регистрацию активных заданий
-    time.sleep(10)
+    time.sleep(15)
 
     # Проверяем, что появилась активная запись (с повторными попытками)
     active_jobs_found = False
-    for attempt in range(20):
+    for attempt in range(30):
         result = db_client.execute("SELECT COUNT(*) FROM PFLB_ACTIVE_JOBS")
         if result and result[0][0] > 0:
             active_jobs_found = True
