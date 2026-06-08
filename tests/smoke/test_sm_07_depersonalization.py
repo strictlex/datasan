@@ -43,12 +43,10 @@ def test_sm_07_depersonalization(db_client, test_logger):
             DELETE FROM PFLB_VIEWCONTENT WHERE TABLE_NAME = 'SM07_TEST';
             INSERT INTO PFLB_VIEWCONTENT (
                 OWNER_NAME, TABLE_NAME, COLUMN_NAME, COLUMN_TYPE,
-                ENCODE_METHOD, COLUMN_ENCODE_TYPE,
-                WHERE_CLAUSE, UPDATE_ROWS, COLUMN_MAX_LEN, EXAMPLE
+                ENCODE_METHOD, COLUMN_ENCODE_TYPE, EXAMPLE
             ) VALUES (
                 USER, 'SM07_TEST', 'FULL_NAME', 'VARCHAR2',
-                'HASH', 'CHAR',
-                '1=1', 1000, 200, 'test'
+                'HASH', 'CHAR','test'
             );
             COMMIT;
         END;
