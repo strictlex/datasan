@@ -40,11 +40,18 @@ def test_sm_07_depersonalization(db_client, test_logger):
     db_client.execute("""
         BEGIN
             DELETE FROM PFLB_VIEWCONTENT WHERE TABLE_NAME = 'SM07_TEST';
-            INSERT INTO PFLB_VIEWCONTENT (TABLE_NAME, COLUMN_NAME, ENCODE_METHOD, COLUMN_ENCODE_TYPE)
-            VALUES ('SM07_TEST', 'FULL_NAME', 'FIO', 'REPLACE');
+            INSERT INTO PFLB_VIEWCONTENT (
+                OWNER_NAME, TABLE_NAME, COLUMN_NAME, COLUMN_TYPE,
+                ENCODE_METHOD, COLUMN_ENCODE_TYPE,
+                WHERE_CLAUSE, UPDATE_ROWS, COLUMN_MAX_LEN, EXAMPLE
+            ) VALUES (
+                USER, 'SM07_TEST', 'FULL_NAME', 'VARCHAR2',
+                'FIO', 'REPLACE',
+                '1=1', 1000, 200, 'test'
+            );
             COMMIT;
         END;
-    """)
+     """)
 
     # 5. Вызываем деперсонализацию (с полной сигнатурой)
     license_key = os.getenv('DATASAN_LICENSE_VALID', '').strip()
@@ -55,7 +62,7 @@ def test_sm_07_depersonalization(db_client, test_logger):
         db_client.execute(f"""
             BEGIN
                 PFLB_DATASAN.PFLB_PROCESS_DATA_TYPE(
-                    '{license_key}', 'FIO', 1, 100, 0, 1, 1, 1
+                    '{license_key}', 'FIO', 2, 100, 1, 2, 1, 1
                 );
             END;
         """)

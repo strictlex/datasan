@@ -13,7 +13,7 @@ def test_sm_12_process_status(db_client, test_logger):
         db_client.execute(f"""
             BEGIN
                 PFLB_DATASAN.PFLB_PROCESS_DATA_TYPE(
-                    '{license_key}', 'FULL_MASK', 1, 100, 0, 1, 1, 1
+                    '{license_key}', 'FULL_MASK', 2, 100, 1, 2, 1, 1
                 );
             END;
         """)

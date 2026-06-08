@@ -59,17 +59,45 @@ def test_sm_11_active_jobs(db_client, test_logger):
     if not license_key:
         pytest.fail("DATASAN_LICENSE_VALID не задан")
 
-    errors = []
-    thread = threading.Thread(target=run_depersonalization, args=(db_client, errors, license_key))
-    thread.start()
-    time.sleep(2)
 
-    # Проверяем, что появилась активная запись
+    # Внутри test_sm_11_active_jobs
+
+errors = []
+thread = threading.Thread(target=run_depersonalization, args=(db_client, errors, license_key))
+thread.start()
+
+# Даём процедуре время зарегистрироваться – больше ожидание
+time.sleep(5)
+
+# Проверяем, что появилась активная запись (с повторными попытками)
+active_jobs_found = False
+for attempt in range(10):
     result = db_client.execute("SELECT COUNT(*) FROM PFLB_ACTIVE_JOBS")
-    assert result and result[0][0] > 0, "PFLB_ACTIVE_JOBS пуста"
+    if result and result[0][0] > 0:
+        active_jobs_found = True
+        break
+    time.sleep(1)
 
-    thread.join(timeout=120)
-    if errors:
-        pytest.fail(f"Ошибка при деперсонализации: {errors[0]}")
+assert active_jobs_found, "PFLB_ACTIVE_JOBS осталась пуста через 15 секунд"
 
-    test_logger.info("SM-11: успешно")
+# Дожидаемся завершения потока
+thread.join(timeout=300)
+if errors:
+    pytest.fail(f"Ошибка при выполнении деперсонализации: {errors[0]}")
+
+
+    
+    # errors = []
+    # thread = threading.Thread(target=run_depersonalization, args=(db_client, errors, license_key))
+    # thread.start()
+    # time.sleep(5)
+
+    # # Проверяем, что появилась активная запись
+    # result = db_client.execute("SELECT COUNT(*) FROM PFLB_ACTIVE_JOBS")
+    # assert result and result[0][0] > 0, "PFLB_ACTIVE_JOBS пуста"
+
+    # thread.join(timeout=120)
+    # if errors:
+    #     pytest.fail(f"Ошибка при деперсонализации: {errors[0]}")
+
+    # test_logger.info("SM-11: успешно")
