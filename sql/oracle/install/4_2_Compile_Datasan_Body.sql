@@ -743,11 +743,11 @@ end if;
 end if;
 		--	DBMS_OUTPUT.put_line(tresult_sql);
         pflb_datasan.PFLB_WRITE_LOGS(tresult_sql);
-                    jsql:='begin PFLB_DATASAN.PFLB_UPDATE_JOB('''||pflb_fix_upd(tresult_sql)||''','''||ownerName||''','''||tableName||''',1); end;';
+                    jsql:='PFLB_DATASAN.PFLB_UPDATE_JOB('''||pflb_fix_upd(tresult_sql)||''','''||ownerName||''','''||tableName||''',1);';
 insert into PFLB_ACTIVE_JOBS(upstring,priority)
 values
     (tresult_sql,priory);
-sys.dbms_job.submit( l_job, 'BEGIN ' || tsql || ' END;', sysdate, null );
+sys.dbms_job.submit( l_job, jsql,sysdate,null );
    --         DBMS_OUTPUT.put_line('PFLB_UPD_PROC_INFO(tquery, trange_end)');
 commit;
 
@@ -826,14 +826,14 @@ end if;
                                         if qid is not null then
 select job_query into tresult_sql_even from pflb_even_tables where id=qid;
 pflb_datasan.PFLB_WRITE_LOGS(tresult_sql_even);
-                                            jsql:='begin PFLB_DATASAN.PFLB_UPDATE_JOB('''||pflb_fix_upd(tresult_sql_even)||''','''||ownerName||''','''||tableName||''',1); end;';
+                                            jsql:='PFLB_DATASAN.PFLB_UPDATE_JOB('''||pflb_fix_upd(tresult_sql_even)||''','''||ownerName||''','''||tableName||''',1);';
 insert into PFLB_ACTIVE_JOBS(upstring,priority)
 values
     (tresult_sql_even,priory);
 delete from pflb_even_tables where id=qid;
 -- pflb_datasan.PFLB_WRITE_LOGS('CHECK 1 ');
 -- pflb_datasan.PFLB_WRITE_LOGS(tresult_sql_even);
-sys.dbms_job.submit( l_job, 'BEGIN ' || tsql || ' END;', sysdate, null );
+sys.dbms_job.submit( l_job, jsql,sysdate,null );
 commit;
 
 -- pflb_datasan.PFLB_WRITE_LOGS('CHECK 1 ');
@@ -900,12 +900,12 @@ end if;
 end if;
                                                 --	DBMS_OUTPUT.put_line(tresult_sql);
                                                 pflb_datasan.PFLB_WRITE_LOGS(tresult_sql);
-                                                jsql:='begin PFLB_DATASAN.PFLB_UPDATE_JOB('''||pflb_fix_upd(tresult_sql)||''','''||ownerName||''','''||tableName||''',1); end;';
+                                                jsql:='PFLB_DATASAN.PFLB_UPDATE_JOB('''||pflb_fix_upd(tresult_sql)||''','''||ownerName||''','''||tableName||''',1);';
 insert into PFLB_ACTIVE_JOBS(upstring,priority)
 values
     (tresult_sql,priory);
 update pflb_even_tables set conc_job_2=tresult_sql where id=eid;
-sys.dbms_job.submit( l_job, 'BEGIN ' || tsql || ' END;', sysdate, null );
+sys.dbms_job.submit( l_job, jsql,sysdate,null );
                                                 --         DBMS_OUTPUT.put_line('PFLB_UPD_PROC_INFO_C(tquery, trange_end)');
 commit;
 pflb_datasan.PFLB_UPD_PROC_INFO_C(tquery, trange_end);
@@ -1275,11 +1275,11 @@ end if;
 end if;
 		--	DBMS_OUTPUT.put_line(tresult_sql);
         pflb_datasan.PFLB_WRITE_LOGS(tresult_sql);
-                    jsql:='begin PFLB_DATASAN.PFLB_UPDATE_JOB('''||pflb_fix_upd(tresult_sql)||''','''||ownerName||''','''||tableName||''',1); end;';
+                    jsql:='PFLB_DATASAN.PFLB_UPDATE_JOB('''||pflb_fix_upd(tresult_sql)||''','''||ownerName||''','''||tableName||''',1);';
 insert into PFLB_ACTIVE_JOBS(upstring,priority)
 values
     (tresult_sql,priory);
-sys.dbms_job.submit( l_job, 'BEGIN ' || tsql || ' END;', sysdate, null );
+sys.dbms_job.submit( l_job, jsql,sysdate,null );
                     pflb_datasan.PFLB_UPD_PROC_INFO(tquery, trange_begin);
    --         DBMS_OUTPUT.put_line('PFLB_UPD_PROC_INFO(tquery, trange_end)');
 commit;
@@ -1359,14 +1359,14 @@ end if;
                                         if qid is not null then
 select job_query into tresult_sql_even from pflb_even_tables where id=qid;
 pflb_datasan.PFLB_WRITE_LOGS(tresult_sql_even);
-                    jsql:='begin PFLB_DATASAN.PFLB_UPDATE_JOB('''||pflb_fix_upd(tresult_sql_even)||''','''||ownerName||''','''||tableName||''',1); end;';
+                    jsql:='PFLB_DATASAN.PFLB_UPDATE_JOB('''||pflb_fix_upd(tresult_sql_even)||''','''||ownerName||''','''||tableName||''',1);';
 insert into PFLB_ACTIVE_JOBS(upstring,priority)
 values
     (tresult_sql_even,priory);
 delete from pflb_even_tables where id=qid;
 -- pflb_datasan.PFLB_WRITE_LOGS('CHECK 1 ');
 -- pflb_datasan.PFLB_WRITE_LOGS(tresult_sql_even);
-sys.dbms_job.submit( l_job, 'BEGIN ' || tsql || ' END;', sysdate, null );
+sys.dbms_job.submit( l_job, jsql,sysdate,null );
 commit;
 
 -- pflb_datasan.PFLB_WRITE_LOGS('CHECK 1 ');
@@ -1432,12 +1432,12 @@ end if;
 end if;
 		--	DBMS_OUTPUT.put_line(tresult_sql);
         pflb_datasan.PFLB_WRITE_LOGS(tresult_sql);
-                    jsql:='begin PFLB_DATASAN.PFLB_UPDATE_JOB('''||pflb_fix_upd(tresult_sql)||''','''||ownerName||''','''||tableName||''',1); end;';
+                    jsql:='PFLB_DATASAN.PFLB_UPDATE_JOB('''||pflb_fix_upd(tresult_sql)||''','''||ownerName||''','''||tableName||''',1);';
 insert into PFLB_ACTIVE_JOBS(upstring,priority)
 values
     (tresult_sql,priory);
 update pflb_even_tables set conc_job_2=tresult_sql where id=eid;
-sys.dbms_job.submit( l_job, 'BEGIN ' || tsql || ' END;', sysdate, null );
+sys.dbms_job.submit( l_job, jsql,sysdate,null );
    --         DBMS_OUTPUT.put_line('PFLB_UPD_PROC_INFO(tquery, trange_end)');
 commit;
 pflb_datasan.PFLB_UPD_PROC_INFO(tquery, trange_end);
@@ -2101,9 +2101,9 @@ EXECUTE IMMEDIATE 'TRUNCATE TABLE PFLB_PROCESSED_TABLES';
 tempc:=0;
 open cur_distictTableName_de;
 open cur_distictTableName_as;
-tsql:='begin PFLB_DATASAN.PFLB_INDEX_SCHED('||tr1||'); end;';
+tsql:='PFLB_DATASAN.PFLB_INDEX_SCHED('||tr1||');';
     pflb_datasan.PFLB_WRITE_LOGS(tsql);
-    sys.dbms_job.submit( l_job, 'BEGIN ' || tsql || ' END;', sysdate, null );
+    sys.dbms_job.submit( l_job, tsql,sysdate,null );
 commit;
 while end_table_loop_flag<=0
         loop
@@ -2122,9 +2122,9 @@ insert into PFLB_ACTIVE_CHANNELS(CHANNEL_NAME,PRIORITY,TREADS_AMT)
 values
     ('Update_sch_de',c_priory,thread_per_dechannel);
 commit;
-tsql:='begin pflb_datasan.PFLB_GEN_AND_EXEC_UPD_DE('''||lickey||''', '''||encodeFunctionName||''', '''||encodeMethod||''', '||rowpupd_de||', '||thread_per_dechannel||', '||threads||', '||sim||', '||c_priory||', '''||viewCont_ownerName_de||''', '''||distTableName_de||''', '''||where_clause_de||''');end; ';
+tsql:='pflb_datasan.PFLB_GEN_AND_EXEC_UPD_DE('''||lickey||''', '''||encodeFunctionName||''', '''||encodeMethod||''', '||rowpupd_de||', '||thread_per_dechannel||', '||threads||', '||sim||', '||c_priory||', '''||viewCont_ownerName_de||''', '''||distTableName_de||''', '''||where_clause_de||''');';
     pflb_datasan.PFLB_WRITE_LOGS(tsql);
-    sys.dbms_job.submit( l_job, 'BEGIN ' || tsql || ' END;', sysdate, null );
+   sys.dbms_job.submit( l_job, tsql,sysdate,null );
 commit;
 end if;
 end if;
@@ -2141,9 +2141,9 @@ insert into PFLB_ACTIVE_CHANNELS(CHANNEL_NAME,PRIORITY,TREADS_AMT)
 values
     ('Update_sch_as',c_priory,1);
 commit;
-tsql:='begin pflb_datasan.PFLB_GEN_AND_EXEC_UPD_AS('''||lickey||''', '''||encodeFunctionName||''', '''||encodeMethod||''', '||rowpupd_as||', '||as_channel||', '||threads||', '||sim||', '||c_priory||', '''||viewCont_ownerName_as||''', '''||distTableName_as||''', '''||where_clause_as||''');end;';
+tsql:='pflb_datasan.PFLB_GEN_AND_EXEC_UPD_AS('''||lickey||''', '''||encodeFunctionName||''', '''||encodeMethod||''', '||rowpupd_as||', '||as_channel||', '||threads||', '||sim||', '||c_priory||', '''||viewCont_ownerName_as||''', '''||distTableName_as||''', '''||where_clause_as||''');';
             pflb_datasan.PFLB_WRITE_LOGS(tsql);
-            sys.dbms_job.submit( l_job, 'BEGIN ' || tsql || ' END;', sysdate, null );
+            sys.dbms_job.submit( l_job, tsql,sysdate,null );
 commit;
 end if;
 end if;
@@ -2414,10 +2414,10 @@ select count(*) into avind_c from pflb_temp_table_indexes where table_status='PR
 if avind_c>0 then
 select nvl(owner_name,0),nvl(table_name,0),nvl(index_name,0) into index_ownerName,index_tableName,index_indexName from pflb_temp_table_indexes where table_status='PROCESSED' and nvl(index_status,0)!='PROCESSING' and nvl(index_status,0)!='SKIPPED' and rownum=1;
 if index_indexName !='0' then
-                    tsql:='begin PFLB_DATASAN.PFLB_ENABLE_INDEX_JOB('||''''||index_ownerName||''','''||index_tableName||''','''||index_indexName||''',4); end;';
+                    tsql:='PFLB_DATASAN.PFLB_ENABLE_INDEX_JOB('||''''||index_ownerName||''','''||index_tableName||''','''||index_indexName||''',4);';
 update pflb_temp_table_indexes set index_status='PROCESSING', threads=4 where owner_name=index_ownerName and table_name=index_tableName and index_name=index_indexName;
 commit;
-sys.dbms_job.submit( l_job, 'BEGIN ' || tsql || ' END;', sysdate, null );
+sys.dbms_job.submit( l_job, tsql,sysdate,null );
 commit;
 else
                     PFLB_DATASAN.PFLB_SLEEP(1);
