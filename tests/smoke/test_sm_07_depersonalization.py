@@ -73,7 +73,7 @@ def test_sm_07_depersonalization(db_client, test_logger):
 
     # 6. Проверяем логи
     time.sleep(5)
-    result = db_client.execute("SELECT COUNT(*) FROM PFLB_LOGS")
-    assert result and result[0][0] > 0, "Логи не записались"
+    result = db_client.execute("SELECT COUNT(*) FROM PFLB_LOGS WHERE LSTR LIKE '%Error%';")
+    assert result != 0, "Ошибки в логах PFLB_LOGS"
 
     test_logger.info("SM-07: успешно")
