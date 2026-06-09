@@ -99,5 +99,5 @@ def test_sm_11_active_jobs(db_client, test_logger):
 
     # result = db_client.execute("SELECT COUNT(*) FROM PFLB_PROCESSED_TABLES")
     result = db_client.fetch_scalar("SELECT COUNT(*) FROM PFLB_PROCESSED_TABLES")
-    assert result > 0
+    assert result > 0, "Не было активных заданий"
     test_logger.info("SM-11: активные задания обнаружены")
