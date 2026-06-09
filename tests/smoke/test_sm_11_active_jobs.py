@@ -54,7 +54,7 @@ def test_sm_11_active_jobs(db_client, test_logger):
     # Добавляем в PFLB_VIEWCONTENT с полными данными
     db_client.execute("""
         BEGIN
-            DELETE FROM PFLB_VIEWCONTENT WHERE TABLE_NAME = 'SM11_TEST';
+            DELETE FROM PFLB_VIEWCONTENT WHERE TABLE_NAME = 'c';
             INSERT INTO PFLB_VIEWCONTENT (
                 OWNER_NAME, TABLE_NAME, COLUMN_NAME, COLUMN_TYPE,
                 ENCODE_METHOD, COLUMN_ENCODE_TYPE, EXAMPLE
@@ -83,7 +83,7 @@ def test_sm_11_active_jobs(db_client, test_logger):
     # Проверяем, что появилась активная запись (с повторными попытками)
     active_jobs_found = False
     for attempt in range(30):
-        result = db_client.execute("SELECT COUNT(*) FROM PFLB_ACTIVE_JOBS")
+        result = db_client.execute("SELECT COUNT(*) FROM PFLB_PROCESSED_TABLES")
         if result and result[0][0] > 0:
             active_jobs_found = True
             break
