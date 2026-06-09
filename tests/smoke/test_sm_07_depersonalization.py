@@ -74,6 +74,7 @@ def test_sm_07_depersonalization(db_client, test_logger):
     # 6. Проверяем логи
     # time.sleep(10)
     result = db_client.execute("SELECT COUNT(*) FROM PFLB_LOGS WHERE upper(LSTR) LIKE '%ERROR%'")
+    # result = db_client.fetch_scalar("SELECT COUNT(*) FROM PFLB_LOGS WHERE upper(LSTR) LIKE '%ERROR%'")
     # count = result.fetchone()[0]
     assert result != 0, "Ошибки в логах PFLB_LOGS"
 
