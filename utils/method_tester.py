@@ -250,6 +250,10 @@ class MethodTester:
                 else f"UPDATE {self.table_name} SET is_valid = :1 WHERE id = :2",
                 (valid_flag, row_id)
             )
+        if failed_rows:
+            log.warning(f"Найдено {len(failed_rows)} неудачных строк. Первые 5:")
+            for i, row in enumerate(failed_rows[:5]):
+                log.warning(f"  {i+1}. id={row['id']}, original='{row['original']}', masked='{row['masked']}', validator={row['validator']}")
         return total, passed, failed_rows
 
     def save_report(self, report_path: Path, failed_rows: list[dict]) -> None:
