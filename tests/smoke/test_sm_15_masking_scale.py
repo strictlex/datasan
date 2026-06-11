@@ -30,9 +30,7 @@ def test_masking_method_scale(db_client, tmp_path, cleanup, test_logger, method_
     # Создаём постоянную папку для отчётов
     reports_dir = Path.cwd() / "reports"
     reports_dir.mkdir(exist_ok=True)
-    count_rows = 100
+    count_rows = 10000
     success = tester.run(rows=count_rows, report_dir=reports_dir)
-    if not success:
-        test_logger.error(f"Метод {method_config['function']} не прошёл валидацию, смотрите выше неудачные строки")
     assert success, f"Метод {method_config['function']} не прошёл валидацию для всех строк"
     test_logger.info("Метод %s успешно протестирован на %d строк", method_config["function"], count_rows)
