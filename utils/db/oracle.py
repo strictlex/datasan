@@ -8,7 +8,7 @@ import oracledb
 # Активируем Thick-режим, чтобы избежать ошибок DPY-4010 при выполнении SQL-скриптов,
 # содержащих двоеточия в строковых литералах (например, "00:00:00").
 # Требуется, чтобы Oracle Instant Client был установлен и доступен в LD_LIBRARY_PATH. ви
-oracledb.init_oracle_client()
+#oracledb.init_oracle_client()
 
 from utils.config import DBProfile
 from utils.db.base import DBClient
