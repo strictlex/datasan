@@ -121,15 +121,15 @@ class MethodTester:
             raise NotImplementedError(drv)
 
     def _insert_sql(self) -> str:
+        """SQL для вставки строки (без id)."""
         drv = self.client.driver_name
         if drv == "oracle":
             if self.data_type == "DATE":
-                # Для Oracle используем TO_DATE с форматом
                 return f"INSERT INTO {self.table_name} (original_value) VALUES (TO_DATE(:1, 'YYYY-MM-DD'))"
             else:
                 return f"INSERT INTO {self.table_name} (original_value) VALUES (:1)"
         else:
-            # Postgres/MSSQL могут принимать строку 'YYYY-MM-DD' как DATE
+            # Postgres/MSSQL – строку 'YYYY-MM-DD' можно вставлять как DATE
             return f"INSERT INTO {self.table_name} (original_value) VALUES (%s)"
     
 
@@ -152,12 +152,7 @@ class MethodTester:
             log.warning("Не удалось удалить таблицу %s: %s", self.table_name, e)
 
     def populate(self, rows: int = 100000, null_ratio: float = 0.1, incorrect_ratio: float = 0.45) -> None:
-        """
-        Заполняет таблицу случайными данными.
-        - null_ratio: доля NULL
-        - incorrect_ratio: доля некорректных данных среди ненулевых
-        """
-        rng = random.Random(42)  # детерминированность
+        rng = random.Random(42)
         sql = self._insert_sql()
         batch = []
         batch_size = 500
@@ -168,6 +163,10 @@ class MethodTester:
             else:
                 if rng.random() < incorrect_ratio:
                     value = self.gen_incorrect(rng)
+                    # Для DATE – даже некорректное значение заменяем на корректное, чтобы вставка не падала
+                    if self.data_type == "DATE" and value is not None:
+                        # Генерируем произвольную корректную дату вместо некорректной
+                        value = self.gen_correct(rng)
                 else:
                     value = self.gen_correct(rng)
             batch.append((value,))
@@ -175,10 +174,8 @@ class MethodTester:
                 for val in batch:
                     self.client.execute(sql, val)
                 batch.clear()
-        # остатки
         for val in batch:
             self.client.execute(sql, val)
-
         log.info("Таблица %s заполнена %d строками", self.table_name, rows)
 
     def apply_masking(self) -> None:

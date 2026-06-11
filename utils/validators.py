@@ -8,45 +8,64 @@ import re
 
 
 def valid_inn(value: str | None) -> bool:
+    """10 или 12 цифр (контрольная сумма не проверяется)."""
     if not value:
         return False
-    digits = value.replace(' ', '')
-    return digits.isdigit() and len(digits) in (10, 12)
+    # Удаляем возможные пробелы
+    cleaned = value.replace(' ', '')
+    return cleaned.isdigit() and len(cleaned) in (10, 12)
+
 
 def valid_phone(value: str | None) -> bool:
+    """11 цифр (с ведущим 7 или без +7)."""
     if not value:
         return False
-    digits = value.lstrip('+')
-    return digits.isdigit() and len(digits) == 11
+    # Удаляем +, пробелы, скобки, дефисы
+    cleaned = re.sub(r'[\+\s\(\)-]', '', value)
+    return cleaned.isdigit() and len(cleaned) == 11 and cleaned[0] == '7'
 
 
 def valid_ip(value: str | None) -> bool:
-    """Четыре числовых октета разделённых точкой (0-255 не проверяем)."""
+    """Четыре числа, разделённых точкой (числа могут быть любыми)."""
     if not value:
         return False
     parts = value.split('.')
-    return len(parts) == 4 and all(p.isdigit() for p in parts)
+    if len(parts) != 4:
+        return False
+    # Проверяем, что каждый октет состоит только из цифр
+    for part in parts:
+        if not part.isdigit():
+            return False
+    return True
 
 
 def valid_passport(value: str | None) -> bool:
+    """Формат: 4 цифры пробел 6 цифр (пробел может отсутствовать)."""
     if not value:
         return False
-    # Допускаем как с пробелом, так и без
-    return bool(re.fullmatch(r'\d{4}\s?\d{6}', value))
+    # Удаляем пробел для проверки
+    cleaned = value.replace(' ', '')
+    return len(cleaned) == 10 and cleaned.isdigit()
 
 
 def valid_snils(value: str | None) -> bool:
     """11 цифр."""
-    return bool(value and len(value) == 11 and value.isdigit())
+    if not value:
+        return False
+    cleaned = value.replace(' ', '')
+    return len(cleaned) == 11 and cleaned.isdigit()
 
 
 def valid_ogrn(value: str | None) -> bool:
     """13 или 15 цифр."""
-    return bool(value and (len(value) == 13 or len(value) == 15) and value.isdigit())
+    if not value:
+        return False
+    cleaned = value.replace(' ', '')
+    return cleaned.isdigit() and len(cleaned) in (13, 15)
 
 
 def valid_cardnumber(value: str | None) -> bool:
-    """16 цифр, возможны пробелы – упрощённо: удаляем пробелы и проверяем длину."""
+    """16 цифр (с пробелами или без)."""
     if not value:
         return False
     cleaned = value.replace(' ', '')
