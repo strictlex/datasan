@@ -144,3 +144,10 @@ def cleanup():
         yield c
     finally:
         c.run()
+
+
+@pytest.fixture(scope="session")
+def scale_report_dir() -> Path:
+    dir_path = ROOT_DIR / "reports" / "scale"
+    dir_path.mkdir(parents=True, exist_ok=True)
+    return dir_path

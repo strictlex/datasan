@@ -151,3 +151,226 @@ def drop_if_exists(client: DBClient, table: str) -> None:
             )
     except Exception as e:  # noqa: BLE001 — drop должен быть максимально толерантным
         log.warning("drop_if_exists(%s) не удался: %s", table, e)
+
+
+# ========== Генераторы для всех типов ПДн (корректные и некорректные) ==========
+
+def snils_correct(rng: random.Random) -> str:
+    """Генерирует валидный СНИЛС (11 цифр, контрольная сумма верна)."""
+    # Генерируем первые 9 цифр
+    digits = [rng.randint(0, 9) for _ in range(9)]
+    # Вычисляем контрольное число
+    total = sum(d * (9 - i) for i, d in enumerate(digits))
+    checksum = total % 101
+    if checksum == 100:
+        checksum = 0
+    # Добиваем до двух цифр
+    checksum_str = f"{checksum:02d}"
+    return "".join(map(str, digits)) + checksum_str
+
+
+def snils_incorrect(rng: random.Random) -> str:
+    """Генерирует неверный СНИЛС (правильная длина, но неправильная контрольная сумма)."""
+    correct = snils_correct(rng)
+    # Меняем одну из последних двух цифр
+    if rng.choice([True, False]):
+        # меняем предпоследнюю
+        lst = list(correct)
+        lst[-2] = str((int(lst[-2]) + 1) % 10)
+        return "".join(lst)
+    else:
+        return correct[:-2] + "00"  # гарантированно неверная сумма
+
+
+def ogrn_correct(rng: random.Random) -> str:
+    """Генерирует валидный ОГРН (13 цифр для юрлица, 15 для ИП) – для простоты 13 цифр."""
+    # Первые 12 цифр произвольные
+    prefix = [rng.randint(0, 9) for _ in range(12)]
+    # Вычисляем контрольную цифру
+    ogrn_num = int("".join(map(str, prefix)))
+    control = (ogrn_num % 11) % 10
+    return "".join(map(str, prefix)) + str(control)
+
+
+def ogrn_incorrect(rng: random.Random) -> str:
+    """Неверный ОГРН (неправильная контрольная цифра)."""
+    correct = ogrn_correct(rng)
+    # Меняем последнюю цифру
+    return correct[:-1] + str((int(correct[-1]) + 1) % 10)
+
+
+def ip_correct(rng: random.Random) -> str:
+    """Случайный IP-адрес (0-255 в каждом октете)."""
+    return ".".join(str(rng.randint(0, 255)) for _ in range(4))
+
+
+def ip_incorrect(rng: random.Random) -> str:
+    """Неверный IP: либо 3 октета, либо буква, либо число >255."""
+    variants = [
+        ".".join(str(rng.randint(0, 255)) for _ in range(3)),  # три октета
+        ".".join(str(rng.randint(0, 300)) for _ in range(4)),  # число >255
+        f"192.168.{rng.randint(0,255)}.abc",                   # буква
+    ]
+    return rng.choice(variants)
+
+
+def date_correct(rng: random.Random) -> str:
+    """Случайная дата в формате YYYY-MM-DD (диапазон 1900-2100)."""
+    year = rng.randint(1900, 2100)
+    month = rng.randint(1, 12)
+    day = rng.randint(1, 28)  # упрощённо, чтобы не заморачиваться с концом месяца
+    return f"{year:04d}-{month:02d}-{day:02d}"
+
+
+def date_incorrect(rng: random.Random) -> str:
+    """Неверная дата: несуществующая дата или неверный формат."""
+    variants = [
+        "2025-02-30",       # несуществующий день
+        "2025-13-01",       # месяц >12
+        "not-a-date",
+        "01-01-2025",       # другой порядок
+    ]
+    return rng.choice(variants)
+
+
+def text_cyrillic(rng: random.Random) -> str:
+    """Случайный кириллический текст (слова из списка имён и фамилий)."""
+    name = rng.choice(_FIRST_NAMES + _LAST_NAMES)
+    # иногда добавляем пробелы и цифры
+    if rng.random() < 0.3:
+        name += " " + str(rng.randint(1, 999))
+    return name
+
+
+def text_latin(rng: random.Random) -> str:
+    """Латиница: случайная строка из букв."""
+    length = rng.randint(3, 20)
+    letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    return "".join(rng.choice(letters) for _ in range(length))
+
+
+# Словарь генераторов: ключ -> (gen_correct, gen_incorrect)
+GENERATORS = {
+    "inn_12": (inn_12, lambda rng: inn_12(rng) + "0"),  # просто добавим лишнюю цифру
+    "snils": (snils_correct, snils_incorrect),
+    "phone": (phone_ru, lambda rng: phone_ru(rng)[:-1]),   # удаляем последнюю цифру
+    "passport": (passport_ru, lambda rng: passport_ru(rng).replace(" ", "")),  # без пробела
+    "ip": (ip_correct, ip_incorrect),
+    "ogrn": (ogrn_correct, ogrn_incorrect),
+    "cardnumber": (lambda rng: "".join(str(rng.randint(0,9)) for _ in range(16)),
+                   lambda rng: "".join(str(rng.randint(0,9)) for _ in range(15))),  # 15 цифр
+    "date": (date_correct, date_incorrect),
+    "text_cyrillic": (text_cyrillic, lambda rng: text_cyrillic(rng)[:5] + "!!!"),
+    "text_latin": (text_latin, lambda rng: text_latin(rng) + "XYZ"),
+    "full_name": (full_name, lambda rng: full_name(rng).replace(" ", "")),  # без пробела
+}# ========== Генераторы для всех типов ПДн (корректные и некорректные) ==========
+
+def snils_correct(rng: random.Random) -> str:
+    """Генерирует валидный СНИЛС (11 цифр, контрольная сумма верна)."""
+    # Генерируем первые 9 цифр
+    digits = [rng.randint(0, 9) for _ in range(9)]
+    # Вычисляем контрольное число
+    total = sum(d * (9 - i) for i, d in enumerate(digits))
+    checksum = total % 101
+    if checksum == 100:
+        checksum = 0
+    # Добиваем до двух цифр
+    checksum_str = f"{checksum:02d}"
+    return "".join(map(str, digits)) + checksum_str
+
+
+def snils_incorrect(rng: random.Random) -> str:
+    """Генерирует неверный СНИЛС (правильная длина, но неправильная контрольная сумма)."""
+    correct = snils_correct(rng)
+    # Меняем одну из последних двух цифр
+    if rng.choice([True, False]):
+        # меняем предпоследнюю
+        lst = list(correct)
+        lst[-2] = str((int(lst[-2]) + 1) % 10)
+        return "".join(lst)
+    else:
+        return correct[:-2] + "00"  # гарантированно неверная сумма
+
+
+def ogrn_correct(rng: random.Random) -> str:
+    """Генерирует валидный ОГРН (13 цифр для юрлица, 15 для ИП) – для простоты 13 цифр."""
+    # Первые 12 цифр произвольные
+    prefix = [rng.randint(0, 9) for _ in range(12)]
+    # Вычисляем контрольную цифру
+    ogrn_num = int("".join(map(str, prefix)))
+    control = (ogrn_num % 11) % 10
+    return "".join(map(str, prefix)) + str(control)
+
+
+def ogrn_incorrect(rng: random.Random) -> str:
+    """Неверный ОГРН (неправильная контрольная цифра)."""
+    correct = ogrn_correct(rng)
+    # Меняем последнюю цифру
+    return correct[:-1] + str((int(correct[-1]) + 1) % 10)
+
+
+def ip_correct(rng: random.Random) -> str:
+    """Случайный IP-адрес (0-255 в каждом октете)."""
+    return ".".join(str(rng.randint(0, 255)) for _ in range(4))
+
+
+def ip_incorrect(rng: random.Random) -> str:
+    """Неверный IP: либо 3 октета, либо буква, либо число >255."""
+    variants = [
+        ".".join(str(rng.randint(0, 255)) for _ in range(3)),  # три октета
+        ".".join(str(rng.randint(0, 300)) for _ in range(4)),  # число >255
+        f"192.168.{rng.randint(0,255)}.abc",                   # буква
+    ]
+    return rng.choice(variants)
+
+
+def date_correct(rng: random.Random) -> str:
+    """Случайная дата в формате YYYY-MM-DD (диапазон 1900-2100)."""
+    year = rng.randint(1900, 2100)
+    month = rng.randint(1, 12)
+    day = rng.randint(1, 28)  # упрощённо, чтобы не заморачиваться с концом месяца
+    return f"{year:04d}-{month:02d}-{day:02d}"
+
+
+def date_incorrect(rng: random.Random) -> str:
+    """Неверная дата: несуществующая дата или неверный формат."""
+    variants = [
+        "2025-02-30",       # несуществующий день
+        "2025-13-01",       # месяц >12
+        "not-a-date",
+        "01-01-2025",       # другой порядок
+    ]
+    return rng.choice(variants)
+
+
+def text_cyrillic(rng: random.Random) -> str:
+    """Случайный кириллический текст (слова из списка имён и фамилий)."""
+    name = rng.choice(_FIRST_NAMES + _LAST_NAMES)
+    # иногда добавляем пробелы и цифры
+    if rng.random() < 0.3:
+        name += " " + str(rng.randint(1, 999))
+    return name
+
+
+def text_latin(rng: random.Random) -> str:
+    """Латиница: случайная строка из букв."""
+    length = rng.randint(3, 20)
+    letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    return "".join(rng.choice(letters) for _ in range(length))
+
+
+# Словарь генераторов: ключ -> (gen_correct, gen_incorrect)
+GENERATORS = {
+    "inn_12": (inn_12, lambda rng: inn_12(rng) + "0"),  # просто добавим лишнюю цифру
+    "snils": (snils_correct, snils_incorrect),
+    "phone": (phone_ru, lambda rng: phone_ru(rng)[:-1]),   # удаляем последнюю цифру
+    "passport": (passport_ru, lambda rng: passport_ru(rng).replace(" ", "")),  # без пробела
+    "ip": (ip_correct, ip_incorrect),
+    "ogrn": (ogrn_correct, ogrn_incorrect),
+    "cardnumber": (lambda rng: "".join(str(rng.randint(0,9)) for _ in range(16)),
+                   lambda rng: "".join(str(rng.randint(0,9)) for _ in range(15))),  # 15 цифр
+    "date": (date_correct, date_incorrect),
+    "text_cyrillic": (text_cyrillic, lambda rng: text_cyrillic(rng)[:5] + "!!!"),
+    "text_latin": (text_latin, lambda rng: text_latin(rng) + "XYZ"),
+    "full_name": (full_name, lambda rng: full_name(rng).replace(" ", "")),  # без пробела
+}

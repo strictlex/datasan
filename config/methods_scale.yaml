@@ -1,0 +1,86 @@
+# Методы маскирования для массового тестирования (100k+ строк)
+# generator и validator – ключи из словарей GENERATORS и VALIDATORS
+methods:
+  - function: PFLB_ENCODE_HASH_INNUMBER
+    data_type: VARCHAR2
+    generator: inn_12
+    validator: inn_12
+    description: ИНН (12 цифр)
+
+  - function: PFLB_ENCODE_HASH_SNILSNUMBER
+    data_type: VARCHAR2
+    generator: snils
+    validator: snils
+    description: СНИЛС
+
+  - function: PFLB_ENCODE_HASH_PHONENUMBER
+    data_type: VARCHAR2
+    generator: phone
+    validator: phone
+    description: Телефон (с префиксом)
+
+  - function: PFLB_ENCODE_HASH_PPCHAR
+    data_type: VARCHAR2
+    generator: passport
+    validator: passport
+    description: Паспорт (серия номер)
+
+  - function: PFLB_ENCODE_HASH_IP
+    data_type: VARCHAR2
+    generator: ip
+    validator: ip
+    description: IP-адрес
+
+  - function: PFLB_ENCODE_HASH_OGRN
+    data_type: VARCHAR2
+    generator: ogrn
+    validator: ogrn
+    description: ОГРН
+
+  - function: PFLB_ENCODE_HASH_CARDNUMBER
+    data_type: VARCHAR2
+    generator: cardnumber
+    validator: cardnumber
+    description: Номер карты
+
+  - function: PFLB_ENCODE_HASH_DATE
+    data_type: DATE
+    generator: date
+    validator: date
+    description: Дата
+
+  - function: PFLB_ENCODE_HASH_BDATE
+    data_type: DATE
+    generator: date
+    validator: date
+    description: Дата рождения
+
+  - function: PFLB_ENCODE_HASH_CDATE
+    data_type: DATE
+    generator: date
+    validator: date
+    description: Дата изменения
+
+  - function: PFLB_ENCODE_HASH_CHAR
+    data_type: VARCHAR2
+    generator: text_cyrillic
+    validator: always_changed
+    description: Произвольный кириллический текст
+
+  - function: PFLB_ENCODE_HASH_NCHAR
+    data_type: VARCHAR2
+    generator: text_cyrillic
+    validator: always_changed
+    description: Название организации (кириллица)
+
+  - function: PFLB_ENCODE_HASH_CHARDEL
+    data_type: VARCHAR2
+    generator: full_name
+    validator: always_changed
+    description: Строка с пробелами
+
+  - function: PFLB_ENCODE_HASH_NUMBER  # если есть такая функция
+    data_type: NUMBER
+    generator: inn_12   # просто как пример числа
+    validator: always_changed
+    description: Числовое значение

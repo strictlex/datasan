@@ -8,7 +8,7 @@ REPORT_FILE = os.path.join(os.path.dirname(__file__), '../../reports/masking_rep
 
 
 def load_config():
-    config_path = os.path.join(os.path.dirname(__file__), '..', '..', 'masking_config.yaml')
+    config_path = os.path.join(os.path.dirname(__file__), '..', '..', 'config/methods_scale.yaml')
     with open(config_path, 'r', encoding='utf-8') as f:
         return yaml.safe_load(f)['methods']
 
