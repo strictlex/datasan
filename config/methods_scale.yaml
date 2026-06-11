@@ -28,7 +28,7 @@ methods:
   - function: PFLB_ENCODE_HASH_IP
     data_type: VARCHAR2
     generator: ip
-    validator: ip
+    validator: always_changed
     description: IP-адрес
 
   - function: PFLB_ENCODE_HASH_OGRN

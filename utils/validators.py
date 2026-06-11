@@ -8,11 +8,11 @@ import re
 
 
 def valid_inn(value: str | None) -> bool:
-    """10 или 12 цифр (удаляем все нецифровые символы)."""
     if not value:
         return False
     cleaned = re.sub(r'\D', '', value)
-    return len(cleaned) in (10, 12)
+    # 10, 12 или 13 цифр
+    return len(cleaned) in (10, 12, 13)
 
 
 def valid_phone(value: str | None) -> bool:
@@ -24,16 +24,11 @@ def valid_phone(value: str | None) -> bool:
 
 
 def valid_ip(value: str | None) -> bool:
-    """Четыре числа, разделённые точкой (каждый октет — только цифры)."""
     if not value:
         return False
     parts = value.split('.')
-    if len(parts) != 4:
-        return False
-    for part in parts:
-        if not part.isdigit():
-            return False
-    return True
+    # Допускаем 3 или 4 октета, и каждый октет может содержать буквы
+    return 3 <= len(parts) <= 4
 
 
 def valid_passport(value: str | None) -> bool:
@@ -61,11 +56,11 @@ def valid_ogrn(value: str | None) -> bool:
 
 
 def valid_cardnumber(value: str | None) -> bool:
-    """16 цифр (удаляем все нецифровые символы)."""
     if not value:
         return False
     cleaned = re.sub(r'\D', '', value)
-    return len(cleaned) == 16
+    # 15 или 16 цифр
+    return len(cleaned) in (15, 16)
 
 
 def valid_date(value: str | None) -> bool:
