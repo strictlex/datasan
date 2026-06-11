@@ -17,12 +17,14 @@ def valid_inn(value: str | None) -> bool:
 
 
 def valid_phone(value: str | None) -> bool:
-    """11 цифр (с ведущим 7 или без +7)."""
     if not value:
         return False
-    # Удаляем +, пробелы, скобки, дефисы
-    cleaned = re.sub(r'[\+\s\(\)-]', '', value)
-    return cleaned.isdigit() and len(cleaned) == 11 and cleaned[0] == '7'
+    # Удаляем всё, кроме цифр и плюса в начале
+    cleaned = re.sub(r'[^\d+]', '', value)
+    # Если начинается с +, убираем +
+    if cleaned.startswith('+'):
+        cleaned = cleaned[1:]
+    return len(cleaned) == 11 and cleaned.isdigit() and cleaned[0] == '7'
 
 
 def valid_ip(value: str | None) -> bool:

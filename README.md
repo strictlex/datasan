@@ -16,7 +16,8 @@ cp .env.example .env
 pytest -m smoke --db=oracle
 
 # Другие варианты
-pytest -m smoke -k "scale" --db=oracle
+pytest -m smoke --db=oracle -v --junitxml=test-results.xml # Запуск всех смоук тестов
+pytest -m smoke -k "scale" --db=oracle # Запуск только проверки методов
 pytest -m smoke --db=postgres
 pytest -m regression --db=mssql
 pytest -m "smoke or regression" --db=oracle

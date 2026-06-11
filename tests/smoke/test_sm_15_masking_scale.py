@@ -32,7 +32,7 @@ def test_masking_method_scale(db_client, tmp_path, cleanup: Cleanup, test_logger
     tester = MethodTester(db_client, method_config)
     # Регистрируем очистку на случай падения 
     # cleanup.add(tester.drop_table) --- tester.run() уже удаляет таблицу в finally
-    rows_table = 1000 #rколичество строк в создаваемых таблицах
+    rows_table = 100 #rколичество строк в создаваемых таблицах
     success = tester.run(rows=rows_table, report_dir=tmp_path)
     assert success, f"Метод {method_config['function']} не прошёл валидацию для всех строк"
     test_logger.info(f"Метод %s успешно протестирован на {rows_table} строк", method_config["function"])

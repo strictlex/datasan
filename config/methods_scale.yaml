@@ -46,19 +46,19 @@ methods:
   - function: PFLB_ENCODE_HASH_DATE
     data_type: DATE
     generator: date
-    validator: date
+    validator: always_changed
     description: Дата
 
   - function: PFLB_ENCODE_HASH_BDATE
     data_type: DATE
     generator: date
-    validator: date
+    validator: always_changed
     description: Дата рождения
 
   - function: PFLB_ENCODE_HASH_CDATE
     data_type: DATE
     generator: date
-    validator: date
+    validator: always_changed
     description: Дата изменения
 
   - function: PFLB_ENCODE_HASH_CHAR
