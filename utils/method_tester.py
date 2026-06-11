@@ -121,12 +121,17 @@ class MethodTester:
             raise NotImplementedError(drv)
 
     def _insert_sql(self) -> str:
-        """SQL для вставки строки (без id)."""
         drv = self.client.driver_name
         if drv == "oracle":
-            return f"INSERT INTO {self.table_name} (original_value) VALUES (:1)"
+            if self.data_type == "DATE":
+                # Для Oracle используем TO_DATE с форматом
+                return f"INSERT INTO {self.table_name} (original_value) VALUES (TO_DATE(:1, 'YYYY-MM-DD'))"
+            else:
+                return f"INSERT INTO {self.table_name} (original_value) VALUES (:1)"
         else:
+            # Postgres/MSSQL могут принимать строку 'YYYY-MM-DD' как DATE
             return f"INSERT INTO {self.table_name} (original_value) VALUES (%s)"
+    
 
     def create_table(self) -> None:
         """Создаёт временную таблицу."""

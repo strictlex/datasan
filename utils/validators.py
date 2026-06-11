@@ -8,18 +8,16 @@ import re
 
 
 def valid_inn(value: str | None) -> bool:
-    """12 цифр (контрольная сумма не проверяется, DataSan её не сохраняет)."""
     if not value:
         return False
-    return len(value) == 12 and value.isdigit()
-
+    digits = value.replace(' ', '')
+    return digits.isdigit() and len(digits) in (10, 12)
 
 def valid_phone(value: str | None) -> bool:
-    """Начинается с 7 или +7, итого 11 или 12 символов, только цифры после +."""
     if not value:
         return False
     digits = value.lstrip('+')
-    return digits.startswith('7') and len(digits) == 11 and digits.isdigit()
+    return digits.isdigit() and len(digits) == 11
 
 
 def valid_ip(value: str | None) -> bool:
@@ -31,8 +29,10 @@ def valid_ip(value: str | None) -> bool:
 
 
 def valid_passport(value: str | None) -> bool:
-    """Формат: 4 цифры пробел 6 цифр."""
-    return bool(value and re.fullmatch(r'\d{4} \d{6}', value))
+    if not value:
+        return False
+    # Допускаем как с пробелом, так и без
+    return bool(re.fullmatch(r'\d{4}\s?\d{6}', value))
 
 
 def valid_snils(value: str | None) -> bool:

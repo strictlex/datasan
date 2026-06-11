@@ -79,8 +79,9 @@ methods:
     validator: always_changed
     description: Строка с пробелами
 
-  - function: PFLB_ENCODE_HASH_NUMBER  # если есть такая функция
-    data_type: NUMBER
-    generator: inn_12   # просто как пример числа
-    validator: always_changed
-    description: Числовое значение
+# пока нет в поставке
+  # - function: PFLB_ENCODE_HASH_NUMBER  # если есть такая функция
+  #   data_type: NUMBER
+  #   generator: inn_12   # просто как пример числа
+  #   validator: always_changed
+  #   description: Числовое значение
